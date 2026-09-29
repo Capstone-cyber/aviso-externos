@@ -2,7 +2,7 @@
  * Aviso de destinatarios externos - Smart Alerts (OnMessageSend)
  * Dominios internos de la organización (sin @):
  */
-var DOMINIOS_INTERNOS = ["capstonemx.com"];
+var DOMINIOS_INTERNOS = ["capstonemx.com", "capstonemexico.onmicrosoft.com", "keystonemortgage.mx"];
 
 function esInterno(correo) {
   var c = (correo || "").toLowerCase().trim();
