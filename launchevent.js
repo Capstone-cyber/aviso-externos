@@ -40,10 +40,6 @@ function onMessageSendHandler(event) {
   }
 }
 
-function recortar(texto) {
-  return texto.length > 500 ? texto.substr(0, 497) + "..." : texto;
-}
-
 function evaluar(destinatarios, event) {
   var externos = [];
   for (var i = 0; i < destinatarios.length; i++) {
@@ -59,27 +55,18 @@ function evaluar(destinatarios, event) {
   }
 
   var MAX = 8;
-  var mostrar = externos.slice(0, MAX);
-  var resto = externos.length - mostrar.length;
-  var cuantos = externos.length === 1 ? "1 destinatario externo" : externos.length + " destinatarios externos";
+  var lista = externos.slice(0, MAX).join(", ");
+  if (externos.length > MAX) lista += " y " + (externos.length - MAX) + " más";
 
-  // Versión con formato (negritas y lista)
-  var md = "**⚠️ ATENCIÓN: AVISO DE CORREO EXTERNO**\n\n" +
-           "Este correo incluye " + cuantos + ":\n\n";
-  for (var j = 0; j < mostrar.length; j++) md += "- " + mostrar[j] + "\n";
-  if (resto > 0) md += "- y " + resto + " más\n";
-  md += "\nVerifica que la información y los adjuntos puedan compartirse fuera de la empresa.";
+  var mensaje =
+    "⚠️ ATENCIÓN: AVISO DE CORREO EXTERNO. Este correo incluye " +
+    (externos.length === 1 ? "1 destinatario externo" : externos.length + " destinatarios externos") +
+    ": " + lista +
+    ". Verifica que la información y los adjuntos puedan compartirse fuera de la empresa.";
 
-  // Versión sencilla para versiones de Outlook que no admiten formato
-  var simple = "⚠️ ATENCIÓN: AVISO DE CORREO EXTERNO. Este correo incluye " + cuantos + ": " +
-               mostrar.join(", ") + (resto > 0 ? " y " + resto + " más" : "") +
-               ". Verifica que la información y los adjuntos puedan compartirse fuera de la empresa.";
+  if (mensaje.length > 500) mensaje = mensaje.substr(0, 497) + "...";
 
-  event.completed({
-    allowEvent: false,
-    errorMessage: recortar(simple),
-    errorMessageMarkdown: recortar(md)
-  });
+  event.completed({ allowEvent: false, errorMessage: mensaje });
 }
 
 Office.actions.associate("onMessageSendHandler", onMessageSendHandler);
